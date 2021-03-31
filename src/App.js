@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import Chat, { Bubble, useMessages } from '@chatui/core';
+import '@chatui/core/dist/index.css';
 
-function App() {
+const App = () => {
+  const { messages, appendMsg, setTyping } = useMessages([]);
+
+  function handleSend(type, val) {
+    if (type === 'text' && val.trim()) {
+      appendMsg({
+        type: 'text',
+        content: { text: val },
+        position: 'right',
+      });
+
+      setTyping(true);
+
+      setTimeout(() => {
+        appendMsg({
+          type: 'text',
+          content: { text: 'Bala bala' },
+        });
+      }, 1000);
+    }
+  }
+
+  function renderMessageContent(msg) {
+    const { content } = msg;
+    return <Bubble content={content.text} />;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Chat
+      navbar={{ title: 'Assistant' }}
+      messages={messages}
+      renderMessageContent={renderMessageContent}
+      onSend={handleSend}
+    />
   );
-}
+};
 
 export default App;
