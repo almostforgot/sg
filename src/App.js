@@ -1,5 +1,5 @@
-import Chat, { Bubble, useMessages } from '@chatui/core';
-import '@chatui/core/dist/index.css';
+import Chat, { Bubble, useMessages } from '@sssound1/sgui';
+import '@sssound1/sgui/dist/index.css';
 
 const App = () => {
   const { messages, appendMsg, setTyping } = useMessages([]);
