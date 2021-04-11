@@ -54,7 +54,8 @@ const App = () => {
     if (msg.type === 'text') {
       return <Bubble content={content.text} />;
     }
-    if (msg.type === 'text') {
+    // If it's other type, handle it here to load different component
+    if (msg.type === 'list') {
       return (
         <Card Card size="xl" >
           <Goods
