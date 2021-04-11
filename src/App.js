@@ -1,4 +1,4 @@
-import Chat, { Bubble, useMessages } from '@sssound1/sgui';
+import Chat, { Bubble, useMessages, Card, Goods } from '@sssound1/sgui';
 import '@sssound1/sgui/dist/index.css';
 import Rasa from './Rasa'
 
@@ -20,7 +20,7 @@ const App = () => {
       new Rasa(rasaHost)
         .sendMessage(val)
         .then(data => {
-          const validMessageTypes = ["text", "image", "buttons", "attachment"];
+          const validMessageTypes = ["text", "image", "buttons", "attachment", "list"];
 
           data.filter((message) =>
             validMessageTypes.some(type => type in message)
@@ -34,14 +34,12 @@ const App = () => {
               });
             }
 
-            if (message.buttons) {
+            if (message.list) {
               validMessage = true;
-              // append other component
-            }
-
-            if (message.image) {
-              validMessage = true;
-              // append other component
+              appendMsg({
+                type: 'list',
+                content: { text: message.text },
+              });
             }
 
             if (validMessage === false)
@@ -53,7 +51,59 @@ const App = () => {
 
   function renderMessageContent(msg) {
     const { content } = msg;
-    return <Bubble content={content.text} />;
+    if (msg.type === 'text') {
+      return <Bubble content={content.text} />;
+    }
+    if (msg.type === 'text') {
+      return (
+        <Card Card size="xl" >
+          <Goods
+            type="order"
+            img="//gw.alicdn.com/tfs/TB1p_nirYr1gK0jSZR0XXbP8XXa-300-300.png"
+            name="商品名称"
+            desc="商品描述"
+            tags={[
+              { name: '3个月免息' },
+              { name: '4.1折' },
+            ]}
+            currency="¥"
+            price="300.00"
+            count={8}
+            unit="kg"
+            status="交易关闭"
+            action={{
+              label: '详情',
+              onClick (e) {
+                console.log(e);
+                e.stopPropagation();
+              },
+            }}
+          />
+          <Goods
+            type="order"
+            img="//gw.alicdn.com/tfs/TB1p_nirYr1gK0jSZR0XXbP8XXa-300-300.png"
+            name="这个商品名称非常非常长长到会换行"
+            desc="商品描述"
+            tags={[
+              { name: '3个月免息' },
+              { name: '4.1折' },
+              { name: '黑卡再省33.96' },
+            ]}
+            currency="$"
+            price="300.00"
+            count={8}
+            unit="kg"
+            action={{
+              label: '详情',
+              onClick (e) {
+                console.log(e);
+                e.stopPropagation();
+              },
+            }}
+          />
+        </Card>
+      );
+    }
   }
 
   return (
