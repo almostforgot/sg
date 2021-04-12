@@ -8,6 +8,17 @@ const App = () => {
 
   const { messages, appendMsg, setTyping } = useMessages([]);
 
+  const generateMsg = message => {
+    for (const property in message) {
+      const content = {};
+      content[property] = message[property];
+      appendMsg({
+        type: property,
+        content,
+      });
+    }
+  }
+
   function handleSend (type, val, initial=false) {
     if (type === 'text' && val.trim() && !initial) {
       appendMsg({
@@ -21,25 +32,18 @@ const App = () => {
     new Rasa(rasaHost)
     .sendMessage(val)
     .then(data => {
-      const validMessageTypes = ["text", "image", "buttons", "attachment", "list"];
-
-      data.filter((message) =>
-        validMessageTypes.some(type => type in message)
-      ).forEach((message) => {
-        let validMessage = false;
-        for (const property in message) {
-          if (validMessageTypes.includes(property)) {
-            validMessage = true;
-            const content = {};
-            content[property] = message[property];
-            appendMsg({
-              type: property,
-              content,
-            });
-          }
+      data.forEach((message) => {
+        // allow multiple line response
+        if('text' in message) {
+          const lines = message.text.split('\\n')
+          lines.forEach(line => {
+            const msg = {}
+            msg['text'] = line.trim()
+            generateMsg(msg)
+          });
+        } else {
+          generateMsg(message)
         }
-        if (validMessage === false)
-          throw Error("Could not parse message from Bot or empty message");
       })
     })
   }
