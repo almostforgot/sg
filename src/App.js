@@ -26,22 +26,17 @@ const App = () => {
             validMessageTypes.some(type => type in message)
           ).forEach((message) => {
             let validMessage = false;
-            if (message.text) {
-              validMessage = true;
-              appendMsg({
-                type: 'text',
-                content: { text: message.text },
-              });
+            for (const property in message) {
+              if (validMessageTypes.includes(property)) {
+                validMessage = true;
+                const content = {};
+                content[property] = message[property];
+                appendMsg({
+                  type: property,
+                  content,
+                });
+              }
             }
-
-            if (message.list) {
-              validMessage = true;
-              appendMsg({
-                type: 'list',
-                content: { text: message.text },
-              });
-            }
-
             if (validMessage === false)
               throw Error("Could not parse message from Bot or empty message");
           })
@@ -103,6 +98,16 @@ const App = () => {
             }}
           />
         </Card>
+      );
+    }
+
+    if (msg.type === 'image') {
+      return (
+        <div>
+          <Bubble type="image">
+            <img src={content.image} alt="" />
+          </Bubble>
+        </div>
       );
     }
   }
