@@ -118,7 +118,7 @@ const App = () => {
 
   useEffect(() => {
     handleSend('text', 'start', true)
-  }, [] );
+  }, [] );// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Chat
