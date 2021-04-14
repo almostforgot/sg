@@ -116,7 +116,7 @@ const App = () => {
     }
   }
 
-  useEffect(() => {
+  useEffect ( function () {
     handleSend('text', 'start', true)
   }, [] );
 
