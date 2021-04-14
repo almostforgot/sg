@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Rasa from './Rasa'
 
 const App = () => {
-  const rasaHost = 'http://localhost:5005/webhooks/rest/webhook';
+  const rasaHost = 'https://seniorguardian.uc.r.appspot.com/webhooks/rest/webhook';
 
   const { messages, appendMsg, setTyping } = useMessages([]);
 
@@ -116,9 +116,9 @@ const App = () => {
     }
   }
 
-  useEffect(() => {
+  useEffect ( () => {
     handleSend('text', 'start', true)
-  }, [] );
+  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Chat
