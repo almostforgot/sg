@@ -2,7 +2,7 @@ import { uuidv4 } from "./utils";
 
 export default class Rasa {
   constructor(host) {
-    this.host = 'http://localhost:5005/webhooks/rest/webhook';
+    this.host = host;
     this.uesrId = 'testUser'
   }
 
