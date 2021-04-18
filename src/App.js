@@ -65,7 +65,14 @@ const App = () => {
     if (msg.type === 'buttons') {
       const buttons = content.buttons
       const buttonList = buttons.map((button) => {
-        function buttonCallBack (payload) {
+        function buttonCallBack (button) {
+          const {title, payload} = button
+          appendMsg({
+            type: 'text',
+            content: { text: title } ,
+            position: 'right',
+          });
+          setTyping(true)
           new Rasa(rasaHost)
           .sendMessage(payload)
           .then(data => {
@@ -74,7 +81,7 @@ const App = () => {
             })
           })
         }
-        return <Button key={button.title} color="primary" onClick={() => buttonCallBack(button.payload)}>{button.title}</Button>
+        return <Button key={button.title} color="primary" onClick={() => buttonCallBack(button)}>{button.title}</Button>
       })
       return (
         <div>
