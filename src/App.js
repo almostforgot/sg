@@ -1,10 +1,11 @@
-import Chat, { Bubble, useMessages, Card, Goods } from '@sssound1/sgui';
+import Chat, { Bubble, useMessages, Card, Goods, Button } from '@sssound1/sgui';
 import '@sssound1/sgui/dist/index.css';
 import { useEffect } from 'react';
 import Rasa from './Rasa'
 
 const App = () => {
-  const rasaHost = 'http://localhost:5005/webhooks/rest/webhook';
+  const rasaHost = 'https://seniorguardian.uc.r.appspot.com/webhooks/rest/webhook';
+  // const rasaHost = 'http://localhost:5005/webhooks/rest/webhook';
 
   const { messages, appendMsg, setTyping } = useMessages([]);
 
@@ -12,10 +13,25 @@ const App = () => {
     for (const property in message) {
       const content = {};
       content[property] = message[property];
-      appendMsg({
-        type: property,
-        content,
-      });
+      switch (property) {
+        case 'text':
+          const lines = message.text.split('\\n')
+          lines.forEach(line => {
+            const textContent = {}
+            textContent['text'] = line.trim()
+            appendMsg({
+              type: 'text',
+              content: textContent,
+            });
+          })
+          break;
+        
+        default:
+          appendMsg({
+            type: property,
+            content,
+          });
+      }
     }
   }
 
@@ -33,26 +49,40 @@ const App = () => {
     .sendMessage(val)
     .then(data => {
       data.forEach((message) => {
-        // allow multiple line response
-        if('text' in message) {
-          const lines = message.text.split('\\n')
-          lines.forEach(line => {
-            const msg = {}
-            msg['text'] = line.trim()
-            generateMsg(msg)
-          });
-        } else {
-          generateMsg(message)
-        }
+        generateMsg(message)
       })
     })
   }
 
-  function renderMessageContent(msg) {
+  function renderMessageContent (msg) {
     const { content } = msg;
     if (msg.type === 'text') {
       return <Bubble content={content.text} />;
     }
+
+    // https://rasa.com/docs/rasa/responses#buttons
+    // https://chatui.io/components/button
+    if (msg.type === 'buttons') {
+      const buttons = content.buttons
+      const buttonList = buttons.map((button) => {
+        function buttonCallBack (payload) {
+          new Rasa(rasaHost)
+          .sendMessage(payload)
+          .then(data => {
+            data.forEach((message) => {
+              generateMsg(message)
+            })
+          })
+        }
+        return <Button key={button.title} color="primary" onClick={() => buttonCallBack(button.payload)}>{button.title}</Button>
+      })
+      return (
+        <div>
+          {buttonList}
+        </div>
+      );
+    }
+
     // If it's other type, handle it here to load different component
     if (msg.type === 'list') {
       return (
@@ -116,7 +146,7 @@ const App = () => {
     }
   }
 
-  useEffect(() => {
+  useEffect ( () => {
     handleSend('text', 'start', true)
   }, [] );// eslint-disable-line react-hooks/exhaustive-deps
 
