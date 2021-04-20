@@ -1,6 +1,6 @@
-import Chat, { Bubble, useMessages, Card, Goods, Button } from '@sssound1/sgui';
+import Chat, { Bubble, Popup, useMessages, Card, Goods, Button } from '@sssound1/sgui';
 import '@sssound1/sgui/dist/index.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Rasa from './Rasa'
 
 const App = () => {
@@ -8,6 +8,15 @@ const App = () => {
   // const rasaHost = 'http://localhost:5005/webhooks/rest/webhook';
 
   const { messages, appendMsg, setTyping } = useMessages([]);
+  const [open, setOpen] = useState(false);
+
+  function handleOpen() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
 
   const generateMsg = message => {
     for (const property in message) {
@@ -25,7 +34,7 @@ const App = () => {
             });
           })
           break;
-        
+
         default:
           appendMsg({
             type: property,
@@ -91,54 +100,52 @@ const App = () => {
     }
 
     // If it's other type, handle it here to load different component
-    if (msg.type === 'list') {
-      return (
-        <Card Card size="xl" >
+    if (msg.type === 'custom' && msg.content.custom.results) {
+      const results = msg.content.custom.results
+      console.log(results)
+
+      const list = results.map((item) => {
+        return (
           <Goods
+            key={item.name}
             type="order"
-            img="//gw.alicdn.com/tfs/TB1p_nirYr1gK0jSZR0XXbP8XXa-300-300.png"
-            name="商品名称"
-            desc="商品描述"
+            img="https://dvh1deh6tagwk.cloudfront.net/niche-builder/5dbba46f052d1.png"
+            name={item.name}
+            desc={item.productDescription}
             tags={[
               { name: '3个月免息' },
               { name: '4.1折' },
-            ]}
-            currency="¥"
-            price="300.00"
-            count={8}
-            unit="kg"
-            status="交易关闭"
-            action={{
-              label: '详情',
-              onClick (e) {
-                console.log(e);
-                e.stopPropagation();
-              },
-            }}
-          />
-          <Goods
-            type="order"
-            img="//gw.alicdn.com/tfs/TB1p_nirYr1gK0jSZR0XXbP8XXa-300-300.png"
-            name="这个商品名称非常非常长长到会换行"
-            desc="商品描述"
-            tags={[
-              { name: '3个月免息' },
-              { name: '4.1折' },
-              { name: '黑卡再省33.96' },
             ]}
             currency="$"
-            price="300.00"
-            count={8}
-            unit="kg"
+            price={item.price}
+            // count={8}
+            // unit="kg"
+            // status="交易关闭"
             action={{
-              label: '详情',
+              label: 'get quote',
               onClick (e) {
-                console.log(e);
+                // console.log(e);
                 e.stopPropagation();
+                window.open(item.quoteLink)
               },
             }}
-          />
-        </Card>
+          >
+          </Goods>
+        )
+      })
+      return (
+        <div>
+          <Button color="primary" onClick={handleOpen}>
+            Click here to see the result!
+          </Button>
+          <Popup
+            active={open}
+            title="result"
+            onClose={handleClose}
+          >
+            {list}
+          </Popup>
+        </div>
       );
     }
 
