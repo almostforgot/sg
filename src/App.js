@@ -90,7 +90,7 @@ const App = () => {
             })
           })
         }
-        return <Button key={button.title} color="primary" onClick={() => buttonCallBack(button)}>{button.title}</Button>
+        return <span><Button key={button.title} color="primary" onClick={() => buttonCallBack(button)}>{button.title}</Button>&nbsp;&nbsp;&nbsp;</span>
       })
       return (
         <div>
