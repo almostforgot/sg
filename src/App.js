@@ -20,40 +20,43 @@ const App = () => {
 
   const generateMsg = message => {
     for (const property in message) {
-      const content = {};
-      content[property] = message[property];
-      switch (property) {
-        case 'text':
-          const lines = message.text.split('\\n')
-          lines.forEach(line => {
-            const textContent = {}
-            textContent['text'] = line.trim()
-            appendMsg({
-              type: 'text',
-              content: textContent,
-            });
-          })
-          break;
+      // Make bot slower, more like human
+      setTimeout(() => {
+        const content = {};
+        content[property] = message[property];
+        switch (property) {
+          case 'text':
+            const lines = message.text.split('\\n')
+            lines.forEach(line => {
+              const textContent = {}
+              textContent['text'] = line.trim()
+              appendMsg({
+                type: 'text',
+                content: textContent,
+              });
+            })
+            break;
 
-        default:
-          appendMsg({
-            type: property,
-            content,
-          });
-      }
+          default:
+            appendMsg({
+              type: property,
+              content,
+            });
+          }
+      }, 1000);
     }
   }
 
-  function handleSend (type, val, initial=false) {
+  function handleSend (type, val, initial = false) {
     if (type === 'text' && val.trim() && !initial) {
       appendMsg({
         type: 'text',
         content: { text: val },
         position: 'right',
       });
-      setTyping(true);
     }
 
+    setTyping(true);
     new Rasa(rasaHost)
     .sendMessage(val)
     .then(data => {
@@ -81,7 +84,6 @@ const App = () => {
             content: { text: title } ,
             position: 'right',
           });
-          setTyping(true)
           new Rasa(rasaHost)
           .sendMessage(payload)
           .then(data => {
@@ -105,17 +107,24 @@ const App = () => {
       console.log(results)
 
       const list = results.map((item) => {
+        const tags = []
+        if (item.hospitalCover) {
+          tags.push({ name: 'Hospital cover' })
+        }
+        if (item.dental) {
+          tags.push({ name: 'Dental' })
+        }
+        if (item.GPVisits) {
+          tags.push({ name: 'GP visits' })
+        }
         return (
           <Goods
             key={item.name}
             type="order"
-            img="https://dvh1deh6tagwk.cloudfront.net/niche-builder/5dbba46f052d1.png"
+            img={item.logo}
             name={item.name}
             desc={item.productDescription}
-            tags={[
-              { name: '3个月免息' },
-              { name: '4.1折' },
-            ]}
+            tags={tags}
             currency="$"
             price={item.price}
             // count={8}

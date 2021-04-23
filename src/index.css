@@ -14,4 +14,31 @@ code {
 
 .ChatApp .Btn--primary {
   background: var(--brand-1);
+  margin-bottom: 5px;
+}
+
+.ChatApp .Navbar {
+  height: 110px;
+  background: none;
+  background-image: url("img/headerbg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.ChatApp .Navbar-title::before {
+  content: "";
+  height: 20px;
+  width: 30px;
+  display: inline-block;
+  background-image: url("img/logo.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.ChatApp .Navbar-title {
+  text-transform: uppercase;
+}
+
+.ChatApp .Navbar-main {
+  flex: 4 1;
 }
